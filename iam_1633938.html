@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>안녕하세요. 동그라미를 좋아하는 0다0입니다.</title>
+  
+  <!-- 프리텐다드 폰트 적용 -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+  
+  <style>
+    /* 1. Reset & Global Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Pretendard Variable", Pretendard, sans-serif;
+    }
+
+    body {
+      background-color: #ffffff;
+      color: #111111;
+      overflow-x: hidden;
+      /* 모눈종이(Grid) 배경 구현 */
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, #f0f0f0 1px, transparent 1px),
+        linear-gradient(to bottom, #f0f0f0 1px, transparent 1px);
+    }
+
+    /* 노란색 동그라미 커서 인터랙션 */
+    #custom-cursor {
+      width: 24px;
+      height: 24px;
+      background-color: rgba(255, 235, 0, 0.6);
+      border-radius: 50%;
+      position: fixed;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.1s ease;
+    }
+
+    /* 하이라이트 효과 스타일 */
+    .highlight {
+      background: linear-gradient(180deg, transparent 60%, #ffeb00 60%);
+      padding: 0 4px;
+    }
+
+    /* 2. Layout Structure */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    section {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 100px 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #888888;
+      margin-bottom: 20px;
+    }
+
+    /* 3. 듀얼 이미지 인터랙션 컴포넌트 (1요소 2사진) */
+    .dual-image-box {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      height: 350px;
+      background-color: #f7f7f7;
+      border: 1px solid #111111;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .dual-image-box .img-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .dual-image-box .img-back {
+      opacity: 0;
+      background-color: #111111;
+      color: #ffffff;
+    }
+
+    .dual-image-box:hover .img-front {
+      opacity: 0;
+      transform: scale(1.05);
+    }
+
+    .dual-image-box:hover .img-back {
+      opacity: 1;
+    }
+
+    /* 4. Section Specific Styles */
+    
+    /* Intro */
+    #intro {
+      align-items: center;
+      text-align: center;
+      justify-content: center;
+    }
+    
+    .intro-title {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1.4;
+      margin-bottom: 40px;
+      word-break: keep-all;
+    }
+
+    .profile-wrap {
+      margin-top: 20px;
+    }
+
+    /* Common layout for split content */
+    .split-content {
+      display: flex;
+      width: 100%;
+      gap: 60px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .text-side {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .text-side h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 20px;
+      word-break: keep-all;
+    }
+
+    .text-side p {
+      font-size: 1.1rem;
+      color: #555555;
+      line-height: 1.8;
+    }
+
+    .visual-side {
+      flex: 1;
+      min-width: 300px;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* 동그라미 섹션 특별 무드 */
+    #circle-section .circle-display {
+      width: 200px;
+      height: 200px;
+      background-color: #ffeb00;
+      border-radius: 50%;
+      border: 2px solid #111111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    #circle-section:hover .circle-display {
+      transform: scale(1.2) rotate(10deg);
+    }
+
+    /* CTA Section */
+    #cta {
+      align-items: center;
+      text-align: center;
+      background-color: #111111;
+      color: #ffffff;
+      border: none;
+    }
+
+    #cta h2 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 30px;
+    }
+
+    .cta-btn {
+      display: inline-block;
+      padding: 18px 40px;
+      background-color: #ffeb00;
+      color: #111111;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-decoration: none;
+      border: 2px solid #ffeb00;
+      transition: all 0.3s ease;
+    }
+
+    .cta-btn:hover {
+      background-color: transparent;
+      color: #ffeb00;
+      border-color: #ffeb00;
+    }
+
+    /* Footer */
+    footer {
+      padding: 40px 0;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #888888;
+      border-top: 1px solid #e0e0e0;
+      background-color: #ffffff;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .intro-title { font-size: 2rem; }
+      .text-side h2 { font-size: 1.6rem; }
+      .split-content { gap: 30px; }
+      section { padding: 60px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 커스텀 마우스 커서 -->
+  <div id="custom-cursor"></div>
+
+  <div class="container">
+    
+    <!-- 1. 캐치프레이즈와 프로필사진 -->
+    <section id="intro">
+      <h1 class="intro-title">
+        안녕하세요.<br>
+        <span class="highlight">동그라미를 좋아하는 0다0</span>입니다.
+      </h1>
+      <div class="profile-wrap">
+        <div class="dual-image-box" style="border-radius: 50%; width: 240px; height: 240px;">
+          <!-- 앞면: 선글라스를 장착한 캐릭터 모티브 그래픽 (SVG) -->
+          <div class="img-layer img-front">
+          <img src="IMG_5466.jpeg" alt="상반 프로필사진" width="300" height="300">
+          </div>
+          <!-- 뒷면: 마우스 오버 시 반전 프로필 레이아웃 -->
+          <div class="img-layer img-back" style="border-radius: 50%;">
+            <p style="font-weight: 700;">공다영 (01.04.20)</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. 소개 -->
+    <section id="about">
+      <div class="section-title">01 / Introduction</div>
+      <div class="split-content">
+        <div class="text-side">
+          <h2>🏠한밭대 남문 주변에서<br>1년 간 임시거주합니다.</h2>
+          <p>남문 근처 맛집 추천해주시면 감사하겠습니다...<br>남문 바로 코앞이에요.</p>
+        </div>
+        <div class="visual-side">
+          <div class="dual-image-box">
+             <img src="한밭대 남문.png" alt="한밭대 남문" width="600" height="400">
+            <div class="img-layer img-back"><p style="padding: 20px; text-align: center;">정말 주변에 아무 것도 없다...</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. 시각디자인전공 -->
+    <section id="major">
+      <div class="section-title">02 / Major : Visual Design</div>
+      <div class="split-content">
+        <div class="visual-side">
+          <div class="dual-image-box">
+            <div class="img-layer img-front">
+              <!-- 디자인 그리드 모티브 내부 레이아웃 -->
+              <svg width="80%" height="80%" viewBox="0 0 100 100">
+                <rect x="5" y="5" width="90" height="90" stroke="#111111" stroke-dasharray="4" fill="none"/>
+                <line x1="50" y1="5" x2="50" y2="95" stroke="#e0e0e0"/>
+                <line x1="5" y1="50" x2="95" y2="50" stroke="#e0e0e0"/>
+                <text x="50" y="54" font-size="6" font-weight="700" text-anchor="middle" fill="#111111">VISUAL DESIGN</text>
+              </svg>
+            </div>
+            <div class="img-layer img-back"><p style="padding: 20px; text-align: center;">웹도, 책도, 게임도 이것저것도 만들곤 했었습니다...</p></div>
+          </div>
+        </div>
+        <div class="text-side">
+          <h2>🎨시각디자인을 <br>전공했습니다.</h2>
+          <p>서비스를 기획할 때 남들과는 조금 다른 접근이 가능하리라 <br>기대하고 있습니다. 싸피에서의 활약 응원해주세요...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. 고양이 -->
+    <section id="cats">
+      <div class="section-title">03 / Companions : Cats </div>
+      <div class="split-content">
+        <div class="text-side">
+          <h2>🩶🐱본가에 두고 온,<br>언제나 그리운 고양이 두 마리</h2>
+          <p>페르시안은 '콩이' 코리안숏헤어는 '보리' 입니다.<br>둘은 사랑을 받기 위해 경쟁하면서도 서로 의지하는 사이입니다.</p>
+        </div>
+        <div class="visual-side">
+          <div class="dual-image-box">
+            <div class="img-layer img-front">
+              <!-- 첫 번째 고양이 플레이스홀더 아이콘 -->
+              <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="1.5">
+                <path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9z"/>
+                <img src="IMG_5462.jpeg" alt=" 콩이" width="600" height="400">
+                
+                <path d="M9 10l1 1 1-1M15 10l1 1 1-1M12 14v2"/>
+              </svg>
+              <span style="margin-left: 10px; font-weight: 500;">첫 번째 고양이 콩이</span>
+            </div>
+            <div class="img-layer img-back">
+              <!-- 두 번째 고양이 플레이스홀더 아이콘 -->
+              <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.5">
+                <img src="IMG_5461.jpeg" alt="보리" width="600" height="400">
+              </svg>
+              <span style="margin-left: 10px; font-weight: 500;">두 번째 고양이 보리</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. 음악듣기 -->
+    <section id="music">
+      <div class="section-title">04 / Hobby : Music</div>
+      <div class="split-content">
+        <div class="visual-side">
+          <div class="dual-image-box">
+            <div class="img-layer img-front" style="flex-direction: column;">
+              <div style="width: 60px; height: 60px; border-radius: 50%; background: #111111; display:flex; justify-content:center; align-items:center;">
+                <img src="IMG_5470.jpeg" alt="헤드셋" width="600" height="400">
+                <div style="width: 20px; height: 20px; border-radius: 50%; background: #ffffff;"></div>
+              </div>
+              <p style="margin-top: 15px; font-size: 14px; color: #888888;"></p>
+            </div>
+            <div class="img-layer img-back">
+              <p style="text-align: center; line-height: 1.6;">🎵Aphex Twin<br><span style="font-size:14px; color:#aaa;">Ageispolis</span></p>
+            </div>
+          </div>
+        </div>
+        <div class="text-side">
+          <h2>🎧헤드셋 끼고<br>음악을 감상해요</h2>
+          <p>장르 상관없이 폭 넓게 듣자 주의여서<br> 음악추천도 기꺼이 받습니다!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. 식물 키우기 -->
+    <section id="botany">
+      <div class="section-title">05 / Hobby : Plants</div>
+      <div class="split-content">
+        <div class="text-side">
+          <h2>🌱소소한 취미인<br>당근,상추,바질 키우기</h2>
+          <p>느리지만 꾸준하게 천천히 자라는 것을 보면서<br> 힐링하고 힘을 얻습니다.</p>
+        </div>
+        <div class="visual-side">
+          <div class="dual-image-box">
+            <div class="img-layer img-front">
+              <span style="font-size: 3rem;"></span>
+              <img src="IMG_5469.jpeg" alt="식물상추" width="700" height="400">
+              <p style="margin-left: 10px; font-weight: 600;"></p>
+            </div>
+            <div class="img-layer img-back">
+              <span style="font-size: 3rem;"></span>
+              <img src="IMG_5468.jpeg" alt="식물풀샷" width="600" height="400">
+              <p style="margin-left: 10px; font-weight: 600;"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. 선글라스 -->
+    <section id="sunglasses">
+      <div class="section-title">06 / Style Signature</div>
+      <div class="split-content">
+        <div class="visual-side">
+          <div class="dual-image-box">
+            <img src="IMG_4870.jpeg" alt="선글라스1" width="500" height="700">
+            <div class="img-layer img-front">
+              <span style="font-size: 4rem;"></span>
+            </div>
+            <div class="img-layer img-back">
+              <img src="IMG_4872.jpeg" alt="선글라스2" width="500" height="700">
+              <p style="padding: 20px; text-align: center; font-weight: bold;"></p>
+            </div>
+          </div>
+        </div>
+        <div class="text-side">
+          <h2>🕶️눈부심이 싫어서<br>선글라스를 주로 착용해요</h2>
+          <p>싸피에 선글라스를 끼고 오긴 그래서<br>선글라스 낀 모습을 보여드리진 못하겠지만...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. 동그라미 -->
+    <section id="circle-section">
+      <div class="section-title">07 / Circle</div>
+      <div class="split-content">
+        <div class="text-side">
+          <h2>제가 가장 좋아하는 도형은,<br>노란색 동그라미.</h2>
+          <p>일상에서 동그란 물건을 만나면 <br>기분이 좋아져요.</p>
+        </div>
+        <div class="visual-side">
+          <div class="circle-display">
+          </div>
+        </div>
+        <div>
+        <img src="IMG_5464.jpeg" alt="모찌리도후" width="200" height="200"><img src="IMG_5463.jpeg" alt="계란" width="200" height="200">
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. CTA (Call To Action) -->
+    <section id="cta">
+      <h2> 공다영에 대해 더 궁금하다면?</h2>
+      <p style="color: #aaaaaa; margin-bottom: 40px; max-width: 600px; line-height: 1.6;">
+      앞으로 잘 부탁드립니다! 끝까지 봐주셔서 감사합니다.
+      </p>
+      <a href="rhdekdud2624@naver.com" class="cta-btn">010-5462-2624</a>
+    </section>
+
+  </div>
+
+  <!-- 10. Footer -->
+  <footer>
+    <p>&copy; 2026 공다영. All Rights Reserved. Designed with Grid & Yellow Circle.</p>
+  </footer>
+
+  <!-- 자바스크립트 인터랙션 구현 -->
+  <script>
+    // 커스텀 커서 마우스 트래킹 기능
+    const cursor = document.getElementById('custom-cursor');
+
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+
+    // 버튼이나 인터랙션 요소 위에 올라갔을 때 커서 크기 키우기 확장 효과
+    const interactiveElements = document.querySelectorAll('.dual-image-box, .cta-btn');
+    
+    interactiveElements.forEach(elem => {
+      elem.addEventListener('mouseenter', () => {
+        cursor.style.transform = 'translate(-50%, -50%) scale(2.5)';
+        cursor.style.backgroundColor = 'rgba(255, 235, 0, 0.8)';
+      });
+      elem.addEventListener('mouseleave', () => {
+        cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+        cursor.style.backgroundColor = 'rgba(255, 235, 0, 0.6)';
+      });
+    });
+  </script>
+</body>
+</html>
